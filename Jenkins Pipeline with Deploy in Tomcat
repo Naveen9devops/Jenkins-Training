@@ -22,8 +22,8 @@ pipeline {
         stage('remove container') {
             agent any
             steps {
-            sh 'docker kill petclinic'
-            sh 'docker rm petclinic'
+            sh 'docker kill petclinic || true'
+            sh 'docker rm petclinic || true'
             }
              }              
         stage('run image') {
