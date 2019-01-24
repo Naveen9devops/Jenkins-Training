@@ -1,0 +1,36 @@
+pipeline {
+    agent none
+    stages {
+        stage('Build') { 
+		   agent {
+             docker {
+             image 'maven:3-alpine' 
+             args '-v /root/.m2:/root/.m2' 
+             }
+             }
+            steps {
+                git 'https://github.com/Naveen9devops/spring-framework-petclinic.git'
+				sh 'mvn -B -DskipTests clean package' 
+            }
+        }
+        stage('imagebuild') {
+            agent any
+            steps {
+            sh 'docker build -t petclinic .'
+            }
+             }
+        stage('remove container') {
+            agent any
+            steps {
+            sh 'docker kill petclinic'
+            sh 'docker rm petclinic'
+            }
+             }              
+        stage('run image') {
+            agent any
+            steps {
+            sh 'docker run -d --name petclinic -p 8088:8080 petclinic'
+            }
+    }
+    }
+}
